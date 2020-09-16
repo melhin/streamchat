@@ -6,6 +6,7 @@
     </head>
     <style type="text/css">
         span.announcement {font-style: italic; color: #b7b7b7}
+        span.newmessage {font-style: bold; color:  #abebc6}
     </style>
     <body>
 
@@ -76,6 +77,13 @@
                             document.createTextNode(data['uname']+": "+data['msg'])
                         );
                         message_content.setAttribute('class', 'comment')
+                    }
+                    if (data['type'] == 'new_message') {
+                        message_content = document.createElement('span');
+                        message_content.appendChild(
+                            document.createTextNode(data['uname']+": "+data['msg'])
+                        );
+                        message_content.setAttribute('class', 'newmessage');
                     }
                     if (data['type'] == 'announcement') {
                         message_content = document.createElement('span');

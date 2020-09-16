@@ -39,8 +39,7 @@ async def websocket_endpoint(websocket: WebSocket,
     await websocket.accept()
     if not verified:
 
-        logger.info('failed verification')
-        logger.info(chat_info)
+        logger.error('failed verification')
         await websocket.close()
     else:
 

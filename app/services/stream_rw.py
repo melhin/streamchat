@@ -8,7 +8,7 @@ from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 from app.core.config import (NUM_PREVIOUS, STREAM_MAX_LEN, XREAD_COUNT,
                              XREAD_TIMEOUT)
 from app.db.connection import get_redis_pool
-from app.services.user_actions import add_room_user, announce, remove_room_user
+from app.services.user_actions import add_room_user, announce, remove_room_user, record_user_presence, get_user_presence
 
 
 async def ws_send(websocket: WebSocket, chat_info: dict):
@@ -37,9 +37,16 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
                 )
                 first_run = False
                 events.reverse()
+                last_presence = await get_user_presence(pool, chat_info['username'])
                 for e_id, e in events:
                     e['e_id'] = e_id
-                    await websocket.send_json(e)
+                    timestamp = e_id.split('-')[0]
+                    if last_presence and e['type'] != 'announcement' and \
+                            float(timestamp) > float(last_presence):
+                        e['type'] = 'new_message'
+                        await websocket.send_json(e)
+                    else:
+                        await websocket.send_json(e)
             else:
                 events = await pool.xread(
                     streams=[chat_info['stream']],
@@ -49,7 +56,9 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
                 )
                 for _, e_id, e in events:
                     e['e_id'] = e_id
+                    timestamp = e_id.split('-')[0]
                     await websocket.send_json(e)
+                    await record_user_presence(pool, chat_info['username'], timestamp)
                     latest_ids = [e_id]
         except ConnectionClosedError:
             ws_connected = False
