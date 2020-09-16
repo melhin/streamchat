@@ -16,6 +16,14 @@ async def room_users(chat_info: dict, pool):
     return users
 
 
+async def record_user_presence(pool, user_name, timestamp):
+    await pool.set(user_name, timestamp)
+
+
+async def get_user_presence(pool, user_name):
+    return await pool.get(user_name)
+
+
 async def announce(pool, chat_info: dict, action: str):
     '''
     add an announcement event onto the redis chat stream
