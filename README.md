@@ -1,6 +1,7 @@
 # StreamChat 
 
-Is an attempt to make a completely self reliant redis stream chat using #fastapi
+Is an attempt to make a completely self reliant redis stream chat using #fastapi.
+
 This project is heavily influenced by the [redis-streams-fastapi-chat](https://github.com/leonh/redis-streams-fastapi-chat)
 
 My attempts would be to
