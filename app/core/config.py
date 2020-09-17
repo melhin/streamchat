@@ -56,4 +56,4 @@ XREAD_TIMEOUT = 0
 XREAD_COUNT = 100
 NUM_PREVIOUS = 30
 STREAM_MAX_LEN = 1000
-ALLOWED_ROOMS = ['chat:1', 'chat:2', 'chat:3']
+ALLOWED_ROOMS = ['chat1', 'chat2', 'chat3']
