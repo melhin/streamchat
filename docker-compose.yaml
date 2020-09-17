@@ -6,3 +6,16 @@ services:
     image: "redis"
     ports: 
       - "6379:6379"
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    tty: true
+    depends_on:
+      - "redis"
+    environment:
+      REDIS_DSN: "redis://redis:6379/0"
+    ports:
+      - "8000:8000"

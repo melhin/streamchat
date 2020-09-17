@@ -43,8 +43,7 @@ for logger_name in LOGGERS:
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL}])
 
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
+REDIS_DSN: str = config("REDIS_DSN", cast=str, default='redis://localhost:6379/1')
 
 TEMPLATES = 'templates'
 
