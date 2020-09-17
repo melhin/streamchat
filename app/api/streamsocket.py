@@ -30,7 +30,7 @@ async def chat_info_vars(username: str = None, room: str = None):
     }
 
 
-@router.websocket('/ws')
+@router.websocket('/ws', name='chatroom_ws')
 async def websocket_endpoint(websocket: WebSocket,
                              chat_info: dict = Depends(chat_info_vars)):
     # check the user is allowed into the chat room

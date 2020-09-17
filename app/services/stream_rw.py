@@ -21,15 +21,15 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
     :param chat_info:
     :type chat_info:
     '''
-    pool = await get_redis_pool()
+    redis_connection = await get_redis_pool()
     latest_ids = ['$']
     ws_connected = True
     first_run = True
-    while pool and ws_connected:
+    while redis_connection and ws_connected:
         try:
             if first_run:
                 # fetch some previous chat history
-                events = await pool.xrevrange(
+                events = await redis_connection.xrevrange(
                     stream=chat_info['stream'],
                     count=NUM_PREVIOUS,
                     start='+',
@@ -37,18 +37,19 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
                 )
                 first_run = False
                 events.reverse()
-                last_presence = await get_user_presence(pool, chat_info['username'])
+                last_presence = await get_user_presence(redis_connection, chat_info['username'])
+                new_message = False
                 for e_id, e in events:
                     e['e_id'] = e_id
                     timestamp = e_id.split('-')[0]
-                    if last_presence and e['type'] != 'announcement' and \
+                    if last_presence and e['type'] != 'announcement' and not new_message and \
                             float(timestamp) > float(last_presence):
-                        e['type'] = 'new_message'
-                        await websocket.send_json(e)
-                    else:
-                        await websocket.send_json(e)
+                        await websocket.send_json({'type': 'new_message'})
+                        await record_user_presence(redis_connection, chat_info['username'], timestamp)
+                        new_message = True
+                    await websocket.send_json(e)
             else:
-                events = await pool.xread(
+                events = await redis_connection.xread(
                     streams=[chat_info['stream']],
                     count=XREAD_COUNT,
                     timeout=XREAD_TIMEOUT,
@@ -58,7 +59,7 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
                     e['e_id'] = e_id
                     timestamp = e_id.split('-')[0]
                     await websocket.send_json(e)
-                    await record_user_presence(pool, chat_info['username'], timestamp)
+                    await record_user_presence(redis_connection, chat_info['username'], timestamp)
                     latest_ids = [e_id]
         except ConnectionClosedError:
             ws_connected = False
@@ -69,7 +70,7 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
         except ServerConnectionClosedError:
             logger.info('redis server connection closed')
             return
-    pool.close()
+    redis_connection.close()
 
 
 async def ws_recieve(websocket: WebSocket, chat_info: dict):
@@ -84,11 +85,11 @@ async def ws_recieve(websocket: WebSocket, chat_info: dict):
     '''
 
     ws_connected = False
-    pool = await get_redis_pool()
-    added = await add_room_user(chat_info, pool)
+    redis_connection = await get_redis_pool()
+    added = await add_room_user(chat_info, redis_connection)
 
     if added:
-        await announce(pool, chat_info, 'connected')
+        await announce(redis_connection, chat_info, 'connected')
         ws_connected = True
     else:
         logger.info('duplicate user error')
@@ -104,13 +105,13 @@ async def ws_recieve(websocket: WebSocket, chat_info: dict):
                 'type': 'comment',
                 'room': chat_info['room'],
             }
-            await pool.xadd(stream=chat_info['stream'],
+            await redis_connection.xadd(stream=chat_info['stream'],
                             fields=fields,
                             message_id=b'*',
                             max_len=STREAM_MAX_LEN)
         except WebSocketDisconnect:
-            await remove_room_user(chat_info, pool)
-            await announce(pool, chat_info, 'disconnected')
+            await remove_room_user(chat_info, redis_connection)
+            await announce(redis_connection, chat_info, 'disconnected')
             ws_connected = False
 
         except ServerConnectionClosedError:
@@ -121,4 +122,4 @@ async def ws_recieve(websocket: WebSocket, chat_info: dict):
             logger.info('redis server connection closed')
             return
 
-    pool.close()
+    redis_connection.close()

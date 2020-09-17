@@ -13,7 +13,7 @@
         <h1>WebSocket Chat</h1>
         <form name="chat-info" id="chat-info" action="#">
             user: <input type="text" name="username" value="ff" autocomplete="off"/>
-            room: <input type="text" name="room" value="chat:1" autocomplete="off"/>
+            room: <input type="text" name="room" value="chat1" autocomplete="off"/>
             <button>Connect</button>
         </form>
         <div id="chat-info">connected users: <span id="user-list"></span></div>
@@ -81,7 +81,7 @@
                     if (data['type'] == 'new_message') {
                         message_content = document.createElement('span');
                         message_content.appendChild(
-                            document.createTextNode(data['uname']+": "+data['msg'])
+                            document.createTextNode("New Messages")
                         );
                         message_content.setAttribute('class', 'newmessage');
                     }
