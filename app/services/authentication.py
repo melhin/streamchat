@@ -5,7 +5,7 @@ from loguru import logger
 
 async def verify_user_for_room(chat_info):
     verified = True
-    redis_connection =await get_redis_pool()
+    redis_connection = await get_redis_pool()
     if not redis_connection:
         logger.info('Redis connection failure')
         return False
