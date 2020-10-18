@@ -119,3 +119,7 @@ venv.bak/
 
 # Mac stuff
 .DS_Store
+
+
+# Ignore DevSpace cache and log folder
+.devspace/
