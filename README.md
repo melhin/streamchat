@@ -23,7 +23,7 @@ You can use docker compose to make this work.
 ```
 docker-compose up
 ```
-Point your browser to [local](http://127.0.0.1:8000/)
+Point your browser to [local](http://127.0.0.1/)
 
 
 ## Dev Space
