@@ -13,9 +13,22 @@ deployments:
       name: redis
       repo: https://charts.bitnami.com/bitnami
     valuesFiles:
-      - redis-values.yaml
+      - dependencies/redis-values.yaml
     values:
       password: ${REDIS_PASSWORD}
+    wait: true
+
+- name: db-instance
+  helm:
+    chart:
+      name: postgresql
+      repo: https://charts.bitnami.com/bitnami
+    valuesFiles:
+      - dependencies/postgres-values.yaml
+    values:
+      postgresqlUsername: ${POSTGRES_USER}
+      postgresqlPassword: ${POSTGRES_PASSWORD}
+      postgresqlDatabase: ${POSTGRES_DB}
     wait: true
 
 - name: streamchat
@@ -29,6 +42,14 @@ deployments:
             value: "redis://redis-instance-master:6379/1"
           - name: REDIS_PASSWORD
             value: ${REDIS_PASSWORD}
+          - name: POSTGRES_USER
+            value: ${POSTGRES_USER}
+          - name: POSTGRES_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          - name: POSTGRES_DB
+            value: ${POSTGRES_DB}
+          - name: POSTGRES_SERVER
+            value: db-instance-postgresql
       service:
         ports:
         - port: 80

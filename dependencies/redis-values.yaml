@@ -399,7 +399,7 @@ master:
     # storageClass: "-"
     accessModes:
       - ReadWriteOnce
-    size: 8Gi
+    size: 1Gi
     ## Persistent Volume selectors
     ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector
     matchLabels: {}
@@ -586,7 +586,7 @@ slave:
     # storageClass: "-"
     accessModes:
       - ReadWriteOnce
-    size: 8Gi
+    size: 1Gi
     ## Persistent Volume selectors
     ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector
     matchLabels: {}

@@ -46,7 +46,7 @@ logger.configure(handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL}])
 REDIS_DSN: str = config("REDIS_DSN", cast=str, default='redis://localhost:6379/1')
 REDIS_PASSWORD: str = config("REDIS_PASSWORD", cast=str, default=None)
 
-DB_CONN: str = config("DB_CONN", cast=str)
+DB_CONN: str = config("DB_CONN", cast=str, default=None)
 
 TEMPLATES = 'templates'
 

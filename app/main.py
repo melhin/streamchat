@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api import router as api_router
 from app.core.config import (ALLOWED_HOSTS, API_PREFIX, DEBUG, PROJECT_NAME,
-                             VERSION, DB_CONN)
+                             VERSION)
 from app.middlewares.headers import CustomHeaderMiddleware
 
 
