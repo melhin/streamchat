@@ -1,0 +1,87 @@
+version: v1beta9
+images:
+  app:
+    image: ${DOCKER_REGISTRY}
+    preferSyncOverRebuild: true
+    injectRestartHelper: true
+    appendDockerfileInstructions:
+    - USER root
+deployments:
+- name: redis-instance
+  helm:
+    chart:
+      name: redis
+      repo: https://charts.bitnami.com/bitnami
+    valuesFiles:
+      - dependencies/redis-values.yaml
+    values:
+      password: ${REDIS_PASSWORD}
+    wait: true
+
+- name: db-instance
+  helm:
+    chart:
+      name: postgresql
+      repo: https://charts.bitnami.com/bitnami
+    valuesFiles:
+      - dependencies/postgres-values.yaml
+    values:
+      postgresqlUsername: ${POSTGRES_USER}
+      postgresqlPassword: ${POSTGRES_PASSWORD}
+      postgresqlDatabase: ${POSTGRES_DB}
+    wait: true
+
+- name: streamchat
+  helm:
+    componentChart: true
+    values:
+      containers:
+      - image: ${DOCKER_REGISTRY}
+        env:
+          - name: REDIS_DSN
+            value: "redis://redis-instance-master:6379/1"
+          - name: REDIS_PASSWORD
+            value: ${REDIS_PASSWORD}
+          - name: POSTGRES_USER
+            value: ${POSTGRES_USER}
+          - name: POSTGRES_PASSWORD
+            value: ${POSTGRES_PASSWORD}
+          - name: POSTGRES_DB
+            value: ${POSTGRES_DB}
+          - name: POSTGRES_SERVER
+            value: db-instance-postgresql
+      service:
+        ports:
+        - port: 80
+        type: NodePort
+      ingress:
+        rules:
+        - host: ${DOMAIN}
+          path: /
+vars:
+  - name: REDIS_PASSWORD
+    source: env
+
+dev:
+  ports:
+  - imageName: app
+    forward:
+    - port: 9090
+      remotePort: 80
+  open:
+  - url: http://localhost:9090
+  sync:
+  - imageName: app
+    excludePaths:
+    - .git/
+    uploadExcludePaths:
+    - devspace.yaml
+    onUpload:
+      restartContainer: true
+profiles:
+- name: production
+  patches:
+  - op: remove
+    path: images.app.injectRestartHelper
+  - op: remove
+    path: images.app.appendDockerfileInstructions

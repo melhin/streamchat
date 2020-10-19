@@ -1,0 +1,7 @@
+REDIS_PASSWORD=YpCnr8eoyH
+DOMAIN=<some_domain>
+DOCKER_REGISTRY=<docker_registry>
+POSTGRES_USER=chat_user
+POSTGRES_PASSWORD=chat_password
+POSTGRES_DB=chat_database
+POSTGRES_SERVER=localhost

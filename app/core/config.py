@@ -1,9 +1,9 @@
 import logging
 import sys
-from typing import List
+from typing import List, Optional
 
-#from databases import DatabaseURL
 from loguru import logger
+from pyparsing import Optional
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
@@ -18,7 +18,6 @@ config = Config(".env")
 
 DEBUG: bool = config("DEBUG", cast=bool, default=False)
 
-#DATABASE_URL: DatabaseURL = config("DB_CONNECTION", cast=DatabaseURL)
 MAX_CONNECTIONS_COUNT: int = config("MAX_CONNECTIONS_COUNT", cast=int, default=10)
 MIN_CONNECTIONS_COUNT: int = config("MIN_CONNECTIONS_COUNT", cast=int, default=10)
 
@@ -44,6 +43,8 @@ for logger_name in LOGGERS:
 logger.configure(handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL}])
 
 REDIS_DSN: str = config("REDIS_DSN", cast=str, default='redis://localhost:6379/1')
+REDIS_PASSWORD: str = config("REDIS_PASSWORD", cast=str, default=None)
+
 
 TEMPLATES = 'templates'
 

@@ -7,15 +7,35 @@ services:
     ports: 
       - "6379:6379"
 
+  db:
+    image: "postgres" # use latest official postgres version
+    environment:
+        POSTGRES_USER: chat_user
+        POSTGRES_PASSWORD: chat_password
+        POSTGRES_DB: chat_database
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   webapp:
     build:
       context: .
       dockerfile: Dockerfile
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    volumes:
+        - ./:/app/
     tty: true
     depends_on:
       - "redis"
+      - "db"
     environment:
       REDIS_DSN: "redis://redis:6379/0"
+      POSTGRES_USER: chat_user
+      POSTGRES_PASSWORD: chat_password
+      POSTGRES_DB: chat_database
+      DB_CONN: postgresql+psycopg2://chat_user:chat_password@db:5432/chat_database 
     ports:
-      - "8000:8000"
+
+      - "80:80"
+volumes:
+  database:

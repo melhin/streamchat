@@ -12,3 +12,5 @@ RUN poetry config virtualenvs.create false
 
 # install dependencies
 RUN poetry install
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
