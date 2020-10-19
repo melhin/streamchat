@@ -5,4 +5,3 @@ POSTGRES_USER=chat_user
 POSTGRES_PASSWORD=chat_password
 POSTGRES_DB=chat_database
 POSTGRES_SERVER=localhost
-DB_CONN=postgresql+psycopg2://chat_user:chat_password@localhost:5432/chat_database
