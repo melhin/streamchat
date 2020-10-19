@@ -9,6 +9,7 @@ from app.core.config import (NUM_PREVIOUS, STREAM_MAX_LEN, XREAD_COUNT,
                              XREAD_TIMEOUT)
 from app.db.connection import get_redis_pool
 from app.services.user_actions import add_room_user, announce, remove_room_user, record_user_presence, get_user_presence
+from sqlalchemy.orm import Session
 
 
 async def ws_send(websocket: WebSocket, chat_info: dict):
@@ -73,7 +74,7 @@ async def ws_send(websocket: WebSocket, chat_info: dict):
     redis_connection.close()
 
 
-async def ws_recieve(websocket: WebSocket, chat_info: dict):
+async def ws_recieve(websocket: WebSocket, chat_info: dict, db: Session):
     '''
     receive json data from client over a WebSocket, add messages onto the
     associated chat stream
@@ -86,8 +87,7 @@ async def ws_recieve(websocket: WebSocket, chat_info: dict):
 
     ws_connected = False
     redis_connection = await get_redis_pool()
-    added = await add_room_user(chat_info, redis_connection)
-
+    added = await add_room_user(chat_info, redis_connection, db)
     if added:
         await announce(redis_connection, chat_info, 'connected')
         ws_connected = True
@@ -110,7 +110,7 @@ async def ws_recieve(websocket: WebSocket, chat_info: dict):
                             message_id=b'*',
                             max_len=STREAM_MAX_LEN)
         except WebSocketDisconnect:
-            await remove_room_user(chat_info, redis_connection)
+            await remove_room_user(chat_info, redis_connection, db)
             await announce(redis_connection, chat_info, 'disconnected')
             ws_connected = False
 

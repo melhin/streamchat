@@ -1,11 +1,15 @@
 import os
 import socket
-
-from fastapi import Request
-from fastapi.routing import APIRouter
-from starlette.templating import Jinja2Templates
+from typing import List
 
 from app.core.config import PORT, TEMPLATES
+from app.db import get_db
+from app.models import ActiveUser
+from app.models.schemas import User
+from fastapi import Depends, Request
+from fastapi.routing import APIRouter
+from sqlalchemy.orm import Session
+from starlette.templating import Jinja2Templates
 
 router = APIRouter()
 
@@ -35,9 +39,17 @@ def get_local_ip():
     return ip
 
 
+
 @router.get("/")
 async def get(request: Request):
     return templates.TemplateResponse("chat.html",
                                       {"request": request,
                                        "ip": get_local_ip(),
                                        "port": PORT})
+
+
+@router.get("/users", response_model=List[User])
+def get_users(db: Session = Depends(get_db)):
+    users = db.query(ActiveUser).all()
+
+    return users

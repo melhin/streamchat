@@ -1,7 +1,6 @@
 import logging
 
 import aioredis
-
 from app.core.config import REDIS_DSN, REDIS_PASSWORD
 
 logger = logging.getLogger(__name__)

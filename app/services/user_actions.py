@@ -2,13 +2,27 @@ import aioredis
 from loguru import logger
 
 from app.core.config import STREAM_MAX_LEN
+from app.models import ActiveUser
+from sqlalchemy.orm import Session
 
 
-async def add_room_user(chat_info: dict, redis_connection: aioredis.Redis):
+async def add_room_user(chat_info: dict, redis_connection: aioredis.Redis, db: Session):
+    username = chat_info['username']
+    user = db.query(ActiveUser).filter_by(username=username).first()
+    if not user:
+        user = ActiveUser(username=username, active=True)
+        db.add(user)
+    else:
+        user.active = True
+    db.commit()
     return await redis_connection.sadd(chat_info['users'], chat_info['username'])
 
 
-async def remove_room_user(chat_info: dict, redis_connection: aioredis.Redis):
+async def remove_room_user(chat_info: dict, redis_connection: aioredis.Redis, db: Session):
+    user = db.query(ActiveUser).filter_by(username=chat_info['username']).first()
+    if user:
+        user.active = False
+        db.commit()
     return await redis_connection.srem(chat_info['users'], chat_info['username'])
 
 

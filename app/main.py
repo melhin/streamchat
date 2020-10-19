@@ -5,7 +5,8 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import router as api_router
-from app.core.config import ALLOWED_HOSTS, API_PREFIX, DEBUG, PROJECT_NAME, VERSION
+from app.core.config import (ALLOWED_HOSTS, API_PREFIX, DEBUG, PROJECT_NAME,
+                             VERSION, DB_CONN)
 from app.middlewares.headers import CustomHeaderMiddleware
 
 
@@ -21,6 +22,7 @@ def get_application() -> FastAPI:
     )
 
     application.add_middleware(CustomHeaderMiddleware)
+
 
     application.include_router(api_router)
 
