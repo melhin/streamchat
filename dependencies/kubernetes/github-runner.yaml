@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner
+  namespace: github-actions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-runner
+  template:
+    metadata:
+      labels:
+        app: github-runner
+    spec:
+      volumes:
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: workdir
+        hostPath:
+          path: /tmp/github-runner-your-repo
+      containers:
+      - name: runner
+        image: myoung34/github-runner:latest
+        env:
+        - name: REPO_URL
+          value: https://github.com/melhin/streamchat
+        - name: RUNNER_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: RUNNER_WORKDIR
+          value: /tmp/github-runner-your-repo
+        - name: ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-actions-token
+              key: pat
+        volumeMounts:
+        - name: dockersock
+          mountPath: /var/run/docker.sock
+        - name: workdir
+          mountPath: /tmp/github-runner-your-repo
+
