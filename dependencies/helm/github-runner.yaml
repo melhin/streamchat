@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner
+  namespace: github-actions
+  labels:
+    app: github-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-runner
+  template:
+    metadata:
+      labels:
+        app: github-runner
+    spec:
+      containers:
+      - name: github-runner
+        image: vitobotta/github-actions-runner:0.0.4
+        env:
+        - name: DOCKER_HOST
+          value: tcp://dind.docker-in-docker:2376
+        - name: GITHUB_OWNER
+          value : melhin
+        - name: GITHUB_REPOSITORY
+          value: streamchat
+        - name: GITHUB_PAT
+          valueFrom:
+            secretKeyRef:
+              name: github-actions-token
+              key: pat

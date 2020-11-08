@@ -123,3 +123,4 @@ venv.bak/
 
 # Ignore DevSpace cache and log folder
 .devspace/
+dependencies/helm/docker-in-docker-secret.yaml
