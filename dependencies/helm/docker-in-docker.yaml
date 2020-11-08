@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dind
+  namespace: docker-in-docker
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dind
+  namespace: docker-in-docker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      workload: deployment-docker-in-docker-dind
+  template:
+    metadata:
+      labels:
+        workload: deployment-docker-in-docker-dind
+    spec:
+      containers:
+      - command:
+        - dockerd
+        - --host=unix:///var/run/docker.sock
+        - --host=tcp://0.0.0.0:2376
+        env:
+        - name: DOCKER_TLS_CERTDIR
+        image: docker:19.03.12-dind
+        imagePullPolicy: IfNotPresent
+        name: dind
+        resources: {}
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: false
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /var/lib/docker
+          name: dind-storage
+      volumes:
+      - name: dind-storage
+        persistentVolumeClaim:
+          claimName: dind
+
