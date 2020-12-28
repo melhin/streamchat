@@ -11,6 +11,9 @@ jobs:
   printInputs:
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo "Log level: ${{ github.event.inputs.logLevel }}"
-        echo "Tags: ${{ github.event.inputs.tags }}" 
+    - env:
+        NAMESPACE: "${{ github.event.inputs.logLevel }}"
+        DOMAIN: "${{ github.event.inputs.logLevel }}.nihlem.it"
+      run: |
+        echo "NameSpace: $NAMESPACE"
+        echo "DOMAIN: $DOMAIN" 
