@@ -8,12 +8,18 @@ on:
       tags:
         description: 'Test scenario tags'  
 jobs:
+
+    
   printInputs:
     runs-on: ubuntu-latest
     steps:
-    - env:
-        NAMESPACE: "${{ github.event.inputs.logLevel }}"
-        DOMAIN: "${{ github.event.inputs.logLevel }}.nihlem.it"
-      run: |
-        echo "NameSpace: $NAMESPACE"
-        echo "DOMAIN: $DOMAIN" 
+      - name: Input Validation
+        run: |
+          if [[ ! "${{ github.event.inputs.logLevel }}" =~ ^(NORTEL|NEC|CISCO)$ ]]; then    echo "Input should be in the given values";exit 1; fi
+      - name: Form Input
+        env:
+          NAMESPACE: "${{ github.event.inputs.logLevel }}"
+          DOMAIN: "${{ github.event.inputs.logLevel }}.nihlem.it"
+        run: |
+          echo "NameSpace: $NAMESPACE"
+          echo "DOMAIN: $DOMAIN" 
