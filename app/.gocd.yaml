@@ -1,9 +1,3 @@
-environments:
-  example:
-    environment_variables:
-      EXAMPLE_DEPLOYMENT: testing
-    pipelines:
-      - yamlpipe1
 pipelines:
   pipeline2:
     group: first
