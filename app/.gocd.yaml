@@ -28,15 +28,10 @@ pipelines:
             timeout: 0
             tasks:
             - exec:
-                command: ls
-#          job:
-#            timeout: 0
-#            tasks:
-#            - exec:
-#                command: echo
-#                arguments:
-#                  - "-X"
-#                  - "POST"
-#                  - "-H 'Content-type: application/json'"
-#                  - "--data '{\"text\": \"Place is deployed with a new version '${REPO_VERSION}'\",\"attachments\": [{\"title\": \"Release - '${REPO_VERSION}'\",\"title_link\": \"https://github.com/some_repo/releases/tag/'$REPO_VERSION'\"}]}'"
-#                  - "${SLACK_WEBHOOK}"
+                command: echo
+                arguments:
+                  - "-X"
+                  - "POST"
+                  - "-H 'Content-type: application/json'"
+                  - "--data '{\"text\": \"Place is deployed with a new version '${REPO_VERSION}'\",\"attachments\": [{\"title\": \"Release - '${REPO_VERSION}'\",\"title_link\": \"https://github.com/some_repo/releases/tag/'$REPO_VERSION'\"}]}'"
+                  - "${SLACK_WEBHOOK}"
