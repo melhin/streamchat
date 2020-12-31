@@ -8,13 +8,10 @@ pipelines:
       EKS_CLUSTER: some-value
     materials:
       git:
-        #git: https://github.com/ganeshspatil/junk
         shallow_clone: false
         auto_update: true
-        #branch: master
-        git: https://github.com/melhin/streamchat.git
+        git: https://github.com/melhin/streamchat
         branch: gocd_slacker
-        #encrypted_password: AES:Cu5uRbHhCGay9flr2dvExw==:95t3dDpZcJmpFmYgLnPFZA==
     stages:
     - stage:
         fetch_materials: true
