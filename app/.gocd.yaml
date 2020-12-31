@@ -5,6 +5,34 @@ environments:
     pipelines:
       - yamlpipe1
 pipelines:
+  pipeline2:
+    group: first
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    environment_variables:
+      EKS_CLUSTER: some-value
+    materials:
+      git:
+        git: https://github.com/ganeshspatil/junk
+        shallow_clone: false
+        auto_update: true
+        branch: master
+        encrypted_password: AES:Cu5uRbHhCGay9flr2dvExw==:95t3dDpZcJmpFmYgLnPFZA==
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+            - exec:
+                command: ls
   yamlpipe1:
     group: demo
     materials:
