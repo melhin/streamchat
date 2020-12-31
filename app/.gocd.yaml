@@ -1,3 +1,9 @@
+environments:
+  example:
+    environment_variables:
+      SL: testing
+    pipelines:
+      - pipeline2
 pipelines:
   pipeline2:
     group: first
@@ -24,5 +30,13 @@ pipelines:
           job:
             timeout: 0
             tasks:
-            - exec:
-                command: ls
+            - exec: |
+                      curl -X POST -H 'Content-type: application/json' --data '{
+                              "text": "Place is deployed with a new version '${REPO_VERSION}'",
+                              "attachments": [
+                                  {
+                                       "title": "Release - '${REPO_VERSION}'",
+                                       "title_link": "https://github.com/chemondis/chemondis/releases/tag/'$REPO_VERSION'"
+                                  }
+                              ]
+                          }' ${SLACK_WEBHOOK} 
