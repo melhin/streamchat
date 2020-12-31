@@ -14,11 +14,13 @@ pipelines:
       EKS_CLUSTER: some-value
     materials:
       git:
-        git: https://github.com/ganeshspatil/junk
+        #git: https://github.com/ganeshspatil/junk
         shallow_clone: false
         auto_update: true
-        branch: master
-        encrypted_password: AES:Cu5uRbHhCGay9flr2dvExw==:95t3dDpZcJmpFmYgLnPFZA==
+        #branch: master
+        git: https://github.com/melhin/streamchat.git
+        branch: gocd_slacker
+        #encrypted_password: AES:Cu5uRbHhCGay9flr2dvExw==:95t3dDpZcJmpFmYgLnPFZA==
     stages:
     - stage:
         fetch_materials: true
@@ -33,17 +35,3 @@ pipelines:
             tasks:
             - exec:
                 command: ls
-  yamlpipe1:
-    group: demo
-    materials:
-      mygit:  # this is the name of material
-        # says about type of material and url at once
-        git: https://github.com/melhin/streamchat.git
-        branch: gocd_slacker
-    stages:
-      - build: # name of stage
-          jobs:
-            build: # name of the job
-              tasks:
-               - exec: # indicates type of task
-                   command: echo "hello"
