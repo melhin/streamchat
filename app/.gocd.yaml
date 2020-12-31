@@ -31,7 +31,7 @@ pipelines:
             timeout: 0
             tasks:
             - exec:
-              - command: echo
+              command: echo
               arguments:
                 - "-X"
                 - "POST"
