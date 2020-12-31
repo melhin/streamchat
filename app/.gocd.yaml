@@ -10,8 +10,6 @@ pipelines:
     label_template: ${COUNT}
     lock_behavior: none
     display_order: -1
-    environment_variables:
-      EKS_CLUSTER: some-value
     materials:
       git:
         shallow_clone: false
